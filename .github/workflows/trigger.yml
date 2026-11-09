@@ -1,0 +1,21 @@
+name: trigger house-alerts
+
+# house-alerts is private and its own schedule has never fired: 0 schedule runs
+# across every slot since 2026-11-08, while this account's public repos do run
+# on schedule. This repo exists only to press the button, and holds no data.
+on:
+  schedule:
+    # 08:17, 13:17, 20:17 Taipei. Must match the budget sum in the crawler's
+    # test_crawl.py: adding a slot here adds a full 18-minute run over there.
+    - cron: "17 0,5,12 * * *"
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch the crawl
+        env:
+          GH_TOKEN: ${{ secrets.HOUSE_ALERTS_TOKEN }}
+        run: gh workflow run crawl.yml --repo floraliu-dev/house-alerts
